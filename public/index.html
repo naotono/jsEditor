@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CodeMirror -->
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.52.2/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.52.2/lib/codemirror.css">
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.52.2/mode/javascript/javascript.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.52.2/addon/edit/closetag.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.53.0/theme/darcula.css">
+
+    <!-- Axios -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+    <title>Document</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+        }
+
+        #window {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #tab {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100px;
+            height: 100%;
+            background: white;
+        }
+
+        #run {
+            position: absolute;
+            left: 0px;
+            bottom: 0px;
+            width: 100%;
+            height: 40px;
+            background: rgb(31, 129, 221);
+            color: white;
+        }
+
+        #run:hover {
+            background: #2b2b2b;
+        }
+
+        #htmlEditor {
+            position: absolute;
+            left: 100px;
+            top: 0;
+            width: 50vw;
+            height: 50vh;
+            background: #2b2b2b;
+            color: #eee;
+            font-size: 16px;
+            resize: none;
+            outline: none;
+        }
+
+        #cssEditor {
+            position: absolute;
+            left: calc(100px + 50vw);
+            top: 0;
+            width: calc(50vw - 100px);
+            height: 50vh;
+            background: #2b2b2b;
+            color: #eee;
+            font-size: 16px;
+            resize: none;
+            outline: none;
+        }
+
+        #jsEditor {
+            position: absolute;
+            left: 100px;
+            top: 50vh;
+            display: flex;
+            flex-direction: column;
+            width: 50vw;
+            height: 50vh;
+        }
+
+
+        #editor {
+            width: 100%;
+            height: 100%;
+        }
+
+        .CodeMirror {
+            width: 100%;
+            height: 100%;
+        }
+
+        #editorBox>button {
+            position: absolute;
+            top: 85vh;
+            width: 100%;
+            height: 10vh;
+        }
+
+
+
+        #result {
+            position: absolute;
+            left: calc(100px + 50vw);
+            top: calc(100vh - 50vh);
+            width: 50vw;
+            height: 50vh;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="window">
+        <div id="tab">
+            <button id="run">RUN</button>
+        </div>
+
+        <textarea id="htmlEditor"></textarea>
+        <textarea id="cssEditor"></textarea>
+
+        <div id="jsEditor">
+            <div id="javascript" style="display:none"></div>
+            <div id="editor"></div>
+        </div>
+
+
+        <iframe id="myframe" src="http://localhost:8001/code.html" frameborder="1"></iframe>
+    </div>
+
+
+    <script>
+        const text = document.querySelector("#javascript");
+        console.log(text)
+        const myCodeMirror = CodeMirror(document.querySelector("#editor"), {
+            value: "",
+            mode: "javascript",
+            theme: "darcula",
+            autoCloseTags: true
+        });
+
+
+
+        const runBtn = document.querySelector("#run");
+        const script = document.querySelector("#script");
+
+
+        const iframe = document.querySelector("#myframe");
+        iframe.id = "result";
+        iframe.contentWindow.location.reload();
+
+        runBtn.addEventListener("click", (e) => {
+            const html = document.querySelector("#htmlEditor").value;
+            const css = document.querySelector("#cssEditor").value;
+
+
+            const code = myCodeMirror.getDoc().getValue();
+            console.log(code);
+            e.preventDefault();
+            axios.post("http://localhost:8001/", {
+                html: html,
+                css: css,
+                code: code || ""
+            })
+                .then(() => iframe.contentWindow.location.reload())
+        })
+    </script>
+</body>
+
+</html>
